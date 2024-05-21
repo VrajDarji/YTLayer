@@ -26,6 +26,7 @@ const layout = async ({
   const Members = await db.query.members.findMany({
     where: eq(members.channelId, Channels[0]?.id),
   });
+  
   return (
     <div>
       <Nav Channels={Channels} Members={Members} role={role} />
