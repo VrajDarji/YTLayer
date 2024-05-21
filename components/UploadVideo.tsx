@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const UploadVideo = () => {
@@ -38,6 +38,13 @@ const UploadVideo = () => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    const fetchChannel = async () => {
+      const { data } = await axios.get("/api/youtube/analytics");
+      console.log(data);
+    };
+    fetchChannel();
+  }, []);
 
   return (
     <div>

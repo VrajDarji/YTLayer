@@ -17,7 +17,7 @@ const Nav = async ({
 }) => {
 
   return (
-    <div className="h-16 border-b w-full flex px-3 py-2 items-center gap-x-8 z-10 cursor-pointer">
+    <div className="h-16 border-b-2 shadow-md w-full flex px-3 py-2 items-center gap-x-8 z-10 cursor-pointer sticky top-0 dark:bg-[#09090B] bg-white">
       <ChannelSwitch Channels={Channels} Members={Members} role={role} />
       <div>
         <MainNav />
