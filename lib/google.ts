@@ -8,7 +8,7 @@ export const youtubeAnalytics = google.youtubeAnalytics({
   auth: oauth,
   version: "v2",
 });
-export const youtubeStats = google.youtube({
+export const youtube = google.youtube({
   version: "v3",
   auth: oauth,
 });

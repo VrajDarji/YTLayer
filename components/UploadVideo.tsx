@@ -1,14 +1,24 @@
 "use client";
+import { youtube_v3 } from "googleapis";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { CircleCheckBig, CircleX, LoaderCircle, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const UploadVideo = () => {
+interface UploadVideoProps {
+  data?: youtube_v3.Schema$Video[] | undefined;
+}
+
+const UploadVideo: React.FC<UploadVideoProps> = ({ data }) => {
   const [isUploaded, setIsUploaded] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [title, setTitle] = useState<string>(
+    data?.[0]?.snippet?.localized?.title as string
+  );
+  const [description, setDescription] = useState<string>(
+    data?.[0]?.snippet?.localized?.description as string
+  );
   const [media, setMedia] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [videoId, setVideoId] = useState<string>("");
@@ -52,12 +62,12 @@ const UploadVideo = () => {
       )}
       <>
         {isUploaded && (
-          <div className="fixed top-0 left-0 min-h-[100vh] min-w-[100vw] flex items-center justify-center z-10">
+          <div className="fixed top-0 left-0 min-h-[100vh] min-w-[100vw] flex items-center justify-center z-20">
             <div className="p-6 rounded-md shadow-md bg-gray-200 dark:bg-zinc-800 flex flex-col gap-y-4 relative">
               <X
                 className="p-1 rounded-full text-white bg-rose-400 absolute top-4 right-4 cursor-pointer"
                 size={20}
-                onClick={() => setIsError(false)}
+                onClick={() => setIsUploaded(false)}
               />
               <CircleCheckBig className="text-emerald-400" size={25} />
               <p>Video Successfully Uploaded</p>
@@ -88,6 +98,7 @@ const UploadVideo = () => {
           <input
             type="text"
             placeholder="Enter Title"
+            value={title}
             onChange={(e) => {
               setTitle(e.target.value);
               console.log(title);
@@ -98,50 +109,65 @@ const UploadVideo = () => {
           <input
             type="text"
             placeholder="Enter Description"
+            value={description}
             onChange={(e) => {
               setDescription(e.target.value + " Uploded via YTLayer v1");
               console.log(description);
             }}
             className="px-4 py-3 rounded-md outline-none focus:ring-1 ring-white min-h-40 w-full"
           />
-          {media ? (
-            <p className="text-xl -pb-2">Preview of your Video</p>
-          ) : (
-            <p className="text-xl -pb-2">Choose your Video File</p>
-          )}
-          <div className="w-full aspect-video rounded-md border-2 flex items-center justify-center relative">
-            {media ? (
-              <video
-                src={mediaPreview as string}
-                className="absolute w-full h-full"
-                controls
-              ></video>
-            ) : (
-              <>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) => {
-                    const files = e.target.files;
-                    if (files && files.length > 0) {
-                      console.log(files[0]);
-                      setMedia(files[0]);
-                      setMediaPreview(URL.createObjectURL(files[0]));
-                    }
-                  }}
-                  id="VideoFile"
-                  className="hidden"
-                />
-                <label
-                  htmlFor="VideoFile"
-                  className="text-xl underline text-indigo-400"
-                >
-                  Choose Your Video File
-                </label>
-              </>
-            )}
+          <div className="w-full grid grid-cols-2 gap-x-4 p-4">
+            <div>
+              {data?.[0]?.id && (
+                <div className="flex flex-col gap-y-4">
+                  <p className="text-xl">Your Video</p>
+                  <iframe
+                    src={`https://youtube.com/embed/${data?.[0]?.id}`}
+                    className="w-full aspect-video border-2 rounded-md"
+                  ></iframe>
+                </div>
+              )}
+            </div>
+            <div className={cn("flex flex-col gap-y-4", !data && "col-span-2")}>
+              {media ? (
+                <p className="text-xl">Preview of your Video</p>
+              ) : (
+                <p className="text-xl -pb-2">Choose your Video File</p>
+              )}
+              <div className="w-full aspect-video  border-2 flex items-center justify-center relative rounded-md">
+                {media ? (
+                  <video
+                    src={mediaPreview as string}
+                    className="absolute w-full h-full"
+                    controls
+                  ></video>
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={(e) => {
+                        const files = e.target.files;
+                        if (files && files.length > 0) {
+                          console.log(files[0]);
+                          setMedia(files[0]);
+                          setMediaPreview(URL.createObjectURL(files[0]));
+                        }
+                      }}
+                      id="VideoFile"
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="VideoFile"
+                      className="text-xl underline text-indigo-400"
+                    >
+                      Choose Your Video File
+                    </label>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-
           <button
             onClick={uploadVideo}
             disabled={isLoading}

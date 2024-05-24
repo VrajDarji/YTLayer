@@ -1,4 +1,4 @@
-import { oauth, youtubeStats } from "@/lib/google";
+import { oauth, youtube } from "@/lib/google";
 import getAccessToken from "./getAccessToken";
 const getVideoStats = async () => {
   const accessToken = await getAccessToken();
@@ -6,7 +6,7 @@ const getVideoStats = async () => {
     access_token: accessToken,
   });
   try {
-    const channelList = await youtubeStats.channels.list({
+    const channelList = await youtube.channels.list({
       part: ["contentDetails", "snippet", "statistics"],
       mine: true,
     });
@@ -15,7 +15,7 @@ const getVideoStats = async () => {
     if (!uploadsId) {
       throw new Error("No uploads found");
     }
-    const playListItems = await youtubeStats.playlistItems.list({
+    const playListItems = await youtube.playlistItems.list({
       part: ["contentDetails"],
       playlistId: uploadsId,
       maxResults: 13,
@@ -24,7 +24,7 @@ const getVideoStats = async () => {
     playListItems.data.items?.map((item) => {
       videoIds.push(item.contentDetails?.videoId as string);
     });
-    const videosResponse = await youtubeStats.videos.list({
+    const videosResponse = await youtube.videos.list({
       part: ["snippet", "statistics"],
       id: videoIds,
     });

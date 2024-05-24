@@ -4,7 +4,7 @@ import db from "@/database/drizzle";
 import { eq } from "drizzle-orm";
 import { channels } from "@/database/schema";
 import { redirect } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
+
 
 export default async function Home() {
   const profile: any = await intialProfile();
@@ -21,7 +21,6 @@ export default async function Home() {
   return (
     <>
       <IntialModal />
-      {/* <UserButton afterSignOutUrl="/" /> */}
     </>
   );
 }

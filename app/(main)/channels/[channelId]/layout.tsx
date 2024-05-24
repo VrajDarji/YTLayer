@@ -3,6 +3,26 @@ import currentProfile from "@/lib/currentProfile";
 import db from "@/database/drizzle";
 import { eq, or } from "drizzle-orm";
 import { channels, dbMembers, members } from "@/database/schema";
+import Head from "next/head";
+import { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { channelId: string };
+}): Promise<Metadata> {
+  const profile = await currentProfile();
+  const Channels = await db.query.channels.findMany({
+    where: or(
+      eq(channels.id, params.channelId),
+      eq(channels.userId, profile?.id as string)
+    ),
+  });
+  const channelName = Channels?.[0]?.name || "";
+  return {
+    title: `YTLayer - ${channelName}`,
+  };
+}
 
 const layout = async ({
   children,
@@ -26,12 +46,20 @@ const layout = async ({
   const Members = await db.query.members.findMany({
     where: eq(members.channelId, Channels[0]?.id),
   });
-  
+  console.log(Channels?.[0]?.name);
+
   return (
-    <div>
-      <Nav Channels={Channels} Members={Members} role={role} />
-      {children}
-    </div>
+    <>
+      <Head>
+        <title>YTLayer - {Channels?.[0]?.name}</title>
+      </Head>
+      <body>
+        <div>
+          <Nav Channels={Channels} Members={Members} role={role} />
+          {children}
+        </div>
+      </body>
+    </>
   );
 };
 

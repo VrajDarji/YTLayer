@@ -1,4 +1,4 @@
-import { oauth, youtubeStats } from "@/lib/google";
+import { oauth, youtube } from "@/lib/google";
 import getAccessToken from "./getAccessToken";
 const getVideoDetails = async (id: string) => {
   const accessToken = await getAccessToken();
@@ -6,7 +6,7 @@ const getVideoDetails = async (id: string) => {
     access_token: accessToken,
   });
   try {
-    const videosResponse = await youtubeStats.videos.list({
+    const videosResponse = await youtube.videos.list({
       part: [
         "snippet",
         "statistics",

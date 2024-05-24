@@ -1,4 +1,4 @@
-import { oauth, youtubeStats } from "@/lib/google";
+import { oauth, youtube } from "@/lib/google";
 import getAccessToken from "./getAccessToken";
 const getChannelStats = async () => {
   const accessToken = await getAccessToken();
@@ -6,7 +6,7 @@ const getChannelStats = async () => {
     access_token: accessToken,
   });
   try {
-    const channelList = await youtubeStats.channels.list({
+    const channelList = await youtube.channels.list({
       part: ["contentDetails", "snippet", "statistics"],
       mine: true,
     });

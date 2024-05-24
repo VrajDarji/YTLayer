@@ -8,7 +8,7 @@ const currentProfile = async () => {
   if (!userId) {
     return null;
   }
-  console.log("FROM LIB : ",userId);
+  console.log("FROM LIB : ", userId);
   const profile = await db.query.users.findFirst({
     where: eq(users.id, userId),
   });

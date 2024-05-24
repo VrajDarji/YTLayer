@@ -1,30 +1,15 @@
-import { google, youtube_v3 } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import { auth, clerkClient } from "@clerk/nextjs";
-
-const oauth = new google.auth.OAuth2({
-  clientId: process.env.GOOGLE_CLIENT_ID as string,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-  redirectUri: "http://localhost:3000/api/auth/callback/google",
-});
-
-const youtube = google.youtube({
-  version: "v3",
-  auth: oauth,
-});
+import { oauth, youtube } from "@/lib/google";
+import getAccessToken from "@/action/getAccessToken";
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = auth();
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 404 });
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
-    const clerkResponse = await clerkClient.users.getUserOauthAccessToken(
-      userId as string,
-      "oauth_google"
-    );
-    const accessToken = clerkResponse[0].token;
     const formData = await req.formData();
     const title = formData.get("title");
     const description = formData.get("description");
