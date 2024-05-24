@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { UserButton } from "@clerk/nextjs";
 
 import {
   Dialog,
@@ -26,7 +27,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Loader } from "lucide-react";
-
 
 const formSchema = z.object({
   id: z.string().min(1),
@@ -65,7 +65,7 @@ const IntialModal = () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get("/api/youtube/analytics");
-      const channelStats = data?.channelStats[0];
+      const channelStats = data?.[0];
       console.log(channelStats);
       form.setValue("id", channelStats?.id);
       form.setValue("imageUrl", channelStats?.snippet?.thumbnails?.high?.url);
@@ -90,6 +90,7 @@ const IntialModal = () => {
           <DialogTitle className="text-center text-2xl font-bold">
             Configure your initial organisation
           </DialogTitle>
+
           <DialogDescription className="text-center text-zinc-500">
             Welcome to YTLayer a youtube workplace for you and your team.
           </DialogDescription>
